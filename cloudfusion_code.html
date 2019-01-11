@@ -1,0 +1,70 @@
+<label for="amount">Amount:</label> 
+<input type="text" name="amount" value="" id="amount">
+<div class="paypal-button"></div>
+
+                        <script> 
+                                var offerAmount = '<cfif (whatprice.recordcount is 1)><cfloop query="whatprice">#offeramount#</cfloop><cfelse></cfif>';
+                            paypal.Button.render({
+                                env: 'production', // Or 'production','sandbox',
+                                client: { 
+                                    //sandbox:    'AczKHHZNmzRGeBtYOE3jtEJCcM9AsHpKPZ7XfcUezFxY2z4R8Tknnh3-ajF1P_rVKX52LWFlCbZ26TS3',
+                                    production: 'ATBN8ofkgWUdifYAHBA4T2q8bGw-r64iNz6ib6A6-OA2LBZsUxPUM_I1Ppjt0YmO7JqDoOsL4rm18HVX'
+                                },
+
+                                commit: true, // Show a 'Pay Now' button
+
+                                payment: function(data, actions) {
+                                    // Make a call to the REST api to create the payment
+                                    return actions.payment.create({
+                                                                                        transactions: [
+                                                                                                {
+                                                                                                         amount: { total: document.getElementById("amount").value, currency: 'USD'}, description:"Payment Descrption"
+                                                                                                }
+                                                                                        ]
+                                    });
+                                },
+
+                                onAuthorize: function(data, actions) {
+
+                                                                        var aa = true;
+                                                                                $.ajax({
+                                                                                           type: "GET",
+                                                                                           url: "checkshopstatus.cfm",
+                                                                                           async: false
+                                                                                   }).done(function(response){
+                                                                                           //alert(response);
+                                                                                           var resArr1 = response.toString().split('0334325160');
+
+                                                                                                if(resArr1[1] == 9) 
+                                                                                                {
+                                                                                                        $(".paypal-button"+resArr1[0]).hide();
+                                                                                                        aa = false;     
+                                                                                                }
+
+                                                                                           });
+
+                                                                                if (aa == false) {
+
+                                                                                                        alert('Something is off');
+                                                                                                        return false;
+                                                                                                }                                    
+                                    // Make a call to the REST api to execute the payment
+                                    return actions.payment.execute().then(function(data, actions) {
+
+                                        $( document ).ready(function() {
+                                         $.get("transactionshophistory_credit.cfm?cardsID=#cardsID#&personID=#cookie.tbecookie#&document.getElementById("amount").value&walletAmount=0&payMode=PayPal&paypaltransactionId="+data.id+"&offerAmount="+offerAmount, function(res) { 
+
+                                        if(res != '')
+                                        {
+                                            $(".paypal-button"+res).hide();
+                                                                                        location.reload(true);  
+                                        }
+                                        $result.html(res);
+                                    },"JSON");
+                                    }); 
+
+                                    });
+                               }
+
+                            }, '.paypal-button#cardsID#');
+                        </script>

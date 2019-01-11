@@ -51,7 +51,7 @@
                                     return actions.payment.execute().then(function(data, actions) {
 
                                         $( document ).ready(function() {
-                                         $.get("transactionshophistory_credit.cfm?cardsID=#cardsID#&personID=#cookie.tbecookie#&amount=" + document.getElementById("amount").value + "&walletAmount=0&payMode=PayPal&paypaltransactionId="+data.id+"&offerAmount="+offerAmount, function(res) { 
+                                         $.get("transactionshophistory_credit.cfm?personID=#cookie.tbecookie#&amount=" + document.getElementById("amount").value + "&walletAmount=0&payMode=PayPal&paypaltransactionId="+data.id+"&offerAmount="+offerAmount, function(res) { 
 
                                         if(res != '')
                                         {

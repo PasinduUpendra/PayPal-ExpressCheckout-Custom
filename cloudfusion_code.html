@@ -3,7 +3,6 @@
 <div class="paypal-button"></div>
 
                         <script> 
-                                var offerAmount = '<cfif (whatprice.recordcount is 1)><cfloop query="whatprice">#offeramount#</cfloop><cfelse></cfif>';
                             paypal.Button.render({
                                 env: 'production', // Or 'production','sandbox',
                                 client: { 
